@@ -28,12 +28,24 @@
     echo -e "AIRFLOW_UID=$(id -u)\nJWT_SECRET=$(openssl rand -hex 32)" > .env
     ```
 
-    ```bash
-    # docker-compose.yaml 파일 수정
-    vi docker-compose.yaml
+    > Windows
+
+    ```powershell
+    # 필요한 디렉토리 생성
+    New-Item -ItemType Directory -Force -Path "./dags", "./logs", "./plugins", "./config"
+
+    # JWT 시크릿 키 생성 및 환경 변수 설정
+    $AIRFLOW_UID = 1000
+    $JWT_SECRET = -join ((48..57) + (65..70) | Get-Random -Count 32 | % { [char]$_ })
+    "AIRFLOW_UID=1000`nJWT_SECRET=$JWT_SECRET" | Out-File -FilePath .env -Encoding utf8
     ```
 
-    다음 설정을 확인/수정하세요
+    ```bash
+    # docker-compose.yaml 파일 수정
+    vim docker-compose.yaml
+    ```
+
+    `docker-compose.yml`에서 다음 설정을 확인/수정하세요
 
     ```yaml
     environment:
