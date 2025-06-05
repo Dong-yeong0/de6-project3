@@ -1,15 +1,12 @@
-name: Review Assign
-
+name: 'Auto Assign'
 on:
   pull_request:
     types: [opened, ready_for_review]
 
 jobs:
-  assign:
+  add-auto-assign:
     runs-on: ubuntu-latest
     steps:
-      - uses: hkusu/review-assign-action@v1
+      - uses: kentaro-m/auto-assign-action@v2.0.0
         with:
-          assignees: ${{ github.actor }} # assign pull request author
-          reviewers: Dong-yeong0 # if draft, assigned when draft is released
-          
+          configuration-path: '.github/auto_assign.yml'
