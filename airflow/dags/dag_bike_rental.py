@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+from datetime import timedelta
 
 import pandas as pd
 import pendulum
@@ -16,7 +17,7 @@ S3_BUCKET_NAME = 'de6-team7'
     dag_id='bike_rental_pipeline',
     tags=['data-pipeline', 'etl', 'bike'],
     catchup=False,
-    start_date=pendulum.datetime(2025, 6, 4, tz='UTC'),
+    start_date=pendulum.datetime(2025, 5, 31, tz='UTC'),
     schedule="@daily",
     default_args={
         'owner': 'dongyeong',
@@ -25,7 +26,7 @@ S3_BUCKET_NAME = 'de6-team7'
 def bike_rental_pipeline():
     @task
     def extract_data(**context):
-        logical_date = context['logical_date']
+        logical_date = context['logical_date'] - timedelta(1)
         target_date = logical_date.strftime('%Y%m%d')
         logger.info(f"Extract started for date: {target_date}")
 
@@ -125,7 +126,7 @@ def bike_rental_pipeline():
         logger.info(f"Sample data after transform\n{df.head()}")
 
         # Save
-        logical_date = context['logical_date']
+        logical_date = context['logical_date'] - timedelta(1)
         processed_data_s3_key = f'processed_data/bike/{logical_date.year}/{logical_date.month}/{logical_date.day}/proceesed_data.parquet'
         logger.info(f"Uploading processed parquet data to S3 at {processed_data_s3_key}")
         upload_to_s3(
@@ -141,7 +142,7 @@ def bike_rental_pipeline():
             transform_result = json.loads(transform_result)
 
         processed_data_s3_key = transform_result['processed_data_s3_key']
-        logical_date = context['logical_date']
+        logical_date = context['logical_date'] - timedelta(1)
         snowflake_hook = SnowflakeHook(snowflake_conn_id='snowflake')
         logger.info(f"Loading data into Snowflake for date: {logical_date.strftime('%Y-%m-%d')}")
         sql = f"""
