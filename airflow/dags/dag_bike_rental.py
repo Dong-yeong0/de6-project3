@@ -18,7 +18,7 @@ S3_BUCKET_NAME = 'de6-team7'
     dag_id='bike_rental_pipeline',
     tags=['data-pipeline', 'etl', 'bike'],
     catchup=False,
-    start_date=pendulum.datetime(2025, 5, 31, tz='UTC'),
+    start_date=pendulum.datetime(2024, 5, 31, tz='UTC'),
     schedule="@daily",
     on_failure_callback=send_fail_alert,
     default_args={
