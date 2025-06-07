@@ -10,6 +10,7 @@ from airflow.decorators import dag, task
 from airflow.models.variable import Variable
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 from plugins.s3 import read_from_s3, upload_to_s3
+from plugins.slack import send_fail_alert
 
 logger = logging.getLogger()
 S3_BUCKET_NAME = 'de6-team7'
@@ -19,6 +20,7 @@ S3_BUCKET_NAME = 'de6-team7'
     catchup=False,
     start_date=pendulum.datetime(2025, 5, 31, tz='UTC'),
     schedule="@daily",
+    on_failure_callback=send_fail_alert,
     default_args={
         'owner': 'dongyeong',
     },
