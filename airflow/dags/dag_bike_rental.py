@@ -78,7 +78,8 @@ def bike_rental_pipeline():
             extract_result = json.loads(extract_result)
 
         raw_data_s3_key = extract_result.get('raw_data_s3_key')
-        
+        logical_date = context['logical_date'] - timedelta(1)
+
         # Load
         logger.info(f"Loading raw data from S3 key: {raw_data_s3_key}")
         raw_data = json.loads(
@@ -116,7 +117,11 @@ def bike_rental_pipeline():
         
         # Convert date and time_slot to datetime
         df['usage_date'] = pd.to_datetime(df['usage_date']).dt.date
-        
+
+        # Add _updated_at, _loaded_at value
+        df['_updated_at'] = logical_date
+        df['_loaded_at'] = logical_date
+
         # Convert numeric(int) columns
         for col in numeric_columns:
             df[col] = pd.to_numeric(df[col], errors='coerce').astype('Int64')
@@ -128,7 +133,6 @@ def bike_rental_pipeline():
         logger.info(f"Sample data after transform\n{df.head()}")
 
         # Save
-        logical_date = context['logical_date'] - timedelta(1)
         processed_data_s3_key = f'processed_data/bike/{logical_date.year}/{logical_date.month}/{logical_date.day}/proceesed_data.parquet'
         logger.info(f"Uploading processed parquet data to S3 at {processed_data_s3_key}")
         upload_to_s3(
