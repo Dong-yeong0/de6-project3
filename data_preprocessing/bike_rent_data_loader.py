@@ -27,11 +27,12 @@ def extract_and_transform():
 
     for idx, chunk in enumerate(chunk_iter, 1):
         print(f"[{idx}] chunk 시작: {len(chunk)} rows")
+        chunk["RENT_NM"] = chunk["RENT_NM"].str.replace(r"^\d+\.", "", regex=True).str.strip()
 
         df_snowflake = pd.DataFrame({
             "USAGE_DATE": pd.to_datetime(chunk["RENT_DT"]).dt.date,
             "USAGE_TIME": chunk["RENT_HR"].astype(int),
-            "STATION_ID": chunk["RENT_ID"],
+            "STATION_ID": chunk["RENT_ID"].astype(int),
             "STATION_NAME": chunk["RENT_NM"],
             "RENTAL_TYPE_CODE": chunk["RENT_TYPE"],
             "GENDER": chunk["GENDER_CD"],
