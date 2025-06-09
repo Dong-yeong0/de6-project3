@@ -35,4 +35,5 @@ def send_fail_alert(context):
     *Execution Time*: {context['logical_date']}
     '''
     alert = send_message(slack_msg, context, title='Task Failure', color='danger')
+
     return alert.execute(context=context)
