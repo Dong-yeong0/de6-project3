@@ -1,20 +1,24 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
-from datetime import datetime, timedelta
-import requests
 import json
 import os
-import pandas as pd
+from datetime import datetime, timedelta
 from io import BytesIO
+
+import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
+import requests
+from airflow.models import Variable
+from airflow.operators.python import PythonOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
-from airflow.models import Variable
+
+from airflow import DAG
+
 
 # ✅ 1. 수집: API 호출 → S3 JSON 저장
 def collect_bike_data(**context):
-    api_key = Variable.get("BIKE_LOCATION_API_KEY")
+    # api_key = Variable.get("BIKE_LOCATION_API_KEY")
+    api_key = Variable.get("SEOUL_DATA_API_KEY")
     base_url = "http://openapi.seoul.go.kr:8088"
     endpoint = "tbCycleStationInfo"
     json_key = "stationInfo"
@@ -39,7 +43,7 @@ def collect_bike_data(**context):
         raise Exception("❌ 결과 없음")
 
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/bike/{exec_date.strftime('%Y/%m')}/bike_station_{run_date}.json"
 
 
@@ -59,7 +63,7 @@ def collect_bike_data(**context):
 # ✅ 2. 전처리: JSON → 컬럼 정제 → Parquet 저장
 def preprocess_bike_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/bike/{exec_date.strftime('%Y/%m')}/bike_station_{run_date}.json"
     output_key = f"processed_data/bike/{exec_date.strftime('%Y/%m')}/bike_station_{run_date}.parquet"
 
@@ -77,10 +81,10 @@ def preprocess_bike_data(**context):
         'RENT_NO': 'STATION_ID'
     })
     df = df[['STATION_ID', 'ADDRESS1', 'ADDRESS2', 'LATITUDE', 'LONGITUDE']]
+    df['STATION_ID'] = df['STATION_ID'].astype(int)
     df['LATITUDE'] = df['LATITUDE'].astype(float).replace(0.0, pd.NA)
     df['LONGITUDE'] = df['LONGITUDE'].astype(float).replace(0.0, pd.NA)
     df = df.astype(object).where(pd.notnull(df), None)
-
     table = pa.Table.from_pandas(df)
     buf = BytesIO()
     pq.write_table(table, buf)
@@ -96,7 +100,7 @@ def preprocess_bike_data(**context):
 # ✅ 3. 적재: Parquet → Snowflake FULL REFRESH
 def load_bike_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     parquet_key = f"processed_data/bike/{exec_date.strftime('%Y/%m')}/bike_station_{run_date}.parquet"
 
     s3_hook = S3Hook(aws_conn_id="aws_s3_conn")
@@ -135,7 +139,7 @@ default_args = {
 with DAG(
     dag_id='dag_bike_pipeline',
     default_args=default_args,
-    schedule_interval='@monthly',
+    schedule='@monthly',
     catchup=False,
     tags=['bike', 'pipeline'],
     description='자전거 위치정보 수집 → 전처리 → Snowflake 적재하는 단일 DAG'
@@ -144,19 +148,16 @@ with DAG(
     collect = PythonOperator(
         task_id='collect_bike_data',
         python_callable=collect_bike_data,
-        provide_context=True
     )
 
     preprocess = PythonOperator(
         task_id='preprocess_bike_data',
         python_callable=preprocess_bike_data,
-        provide_context=True
     )
 
     load = PythonOperator(
         task_id='load_bike_data',
         python_callable=load_bike_data,
-        provide_context=True
     )
 
     collect >> preprocess >> load
