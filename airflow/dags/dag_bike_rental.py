@@ -12,6 +12,8 @@ from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 from plugins.s3 import read_from_s3, upload_to_s3
 from plugins.slack import send_fail_alert
 
+pd.set_option('display.max_columns', None)
+
 logger = logging.getLogger()
 S3_BUCKET_NAME = 'de6-team7'
 @dag(
@@ -112,7 +114,7 @@ def bike_rental_pipeline():
         
         df['station_name'] = df['station_name'].str.split('.').str[1].str.strip()
         
-        numeric_columns = ['usage_time', 'usage_count', 'duration']
+        numeric_columns = ['station_id', 'usage_time', 'usage_count', 'duration']
         float_columns = ['calories', 'carbon_emission', 'distance']
         
         # Convert date and time_slot to datetime
