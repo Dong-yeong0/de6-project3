@@ -68,13 +68,13 @@ def preprocess_bike_data(**context):
     raw = s3_hook.get_key(key=s3_key, bucket_name="de6-team7").get()["Body"].read().decode("utf-8")
     data = json.loads(raw)
 
-    df = pd.DataFrame(data)[['STA_ADD1', 'STA_ADD2', 'STA_LAT', 'STA_LONG', 'RENT_ID']]
+    df = pd.DataFrame(data)[['STA_ADD1', 'STA_ADD2', 'STA_LAT', 'STA_LONG', 'RENT_NO']]
     df = df.rename(columns={
         'STA_ADD1': 'ADDRESS1',
         'STA_ADD2': 'ADDRESS2',
         'STA_LAT': 'LATITUDE',
         'STA_LONG': 'LONGITUDE',
-        'RENT_ID': 'STATION_ID'
+        'RENT_NO': 'STATION_ID'
     })
     df = df[['STATION_ID', 'ADDRESS1', 'ADDRESS2', 'LATITUDE', 'LONGITUDE']]
     df['LATITUDE'] = df['LATITUDE'].astype(float).replace(0.0, pd.NA)
