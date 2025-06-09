@@ -17,8 +17,7 @@ from airflow import DAG
 
 # ✅ 1. 수집: API 호출 → S3 JSON 저장
 def collect_bike_data(**context):
-    # api_key = Variable.get("BIKE_LOCATION_API_KEY")
-    api_key = Variable.get("SEOUL_DATA_API_KEY")
+    api_key = Variable.get("BIKE_LOCATION_API_KEY")
     base_url = "http://openapi.seoul.go.kr:8088"
     endpoint = "tbCycleStationInfo"
     json_key = "stationInfo"
