@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw_data
+    tables:
+      - name: bike_hour
+        identifier: bike_rentals_by_hour
+        loaded_at_field: _loaded_at
+      - name: bike_location
+        identifier: bike_station_coordinates
+      - name: bus
+        identifier: bus_usage
+        loaded_at_field: _loaded_at
+      - name: bus_location
+        identifier: bus_stop_coordinates
+      - name: subway
+        identifier: subway_info
+      - name: subway_location
+        identifier: seoul_metro_station_coordinates
