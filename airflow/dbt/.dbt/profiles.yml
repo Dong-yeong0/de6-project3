@@ -1,0 +1,13 @@
+de6_team7:
+  outputs:
+    dev:
+      account: chnageeme
+      database: changeme
+      password: 'changeme'
+      role: changeme
+      schema: changeme 
+      threads: 1
+      type: snowflake
+      user: changeme 
+      warehouse: changeme
+  target: dev

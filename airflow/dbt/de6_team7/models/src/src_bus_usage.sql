@@ -1,0 +1,14 @@
+SELECT
+    USAGE_DATE,
+    ROUTE_NUMBER,
+    ROUTE_NAME,
+    NODE_ID,
+    ARS_ID,
+    STATION_NAME,
+    BOARDING_COUNT,
+    GETOFF_COUNT,
+    _LOADED_AT
+FROM
+    {{ source('raw', 'bus') }}
+WHERE
+    USAGE_DATE IS NOT NULL

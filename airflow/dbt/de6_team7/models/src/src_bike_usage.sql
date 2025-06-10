@@ -1,0 +1,22 @@
+SELECT
+    USAGE_DATE,
+    USAGE_TIME,
+    STATION_ID,
+    STATION_NAME,
+    RENTAL_TYPE_CODE,
+    GENDER,
+    AGE_GROUP,
+    USAGE_COUNT,
+    CALORIES,
+    CARBON_EMISSION,
+    DISTANCE,
+    DURATION,
+    _LOADED_AT
+FROM
+    {{ source('raw', 'bike_hour') }}
+WHERE
+    1 = 1
+AND
+    USAGE_DATE IS NOT NULL
+AND
+    STATION_ID NOT LIKE '0%'

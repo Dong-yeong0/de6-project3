@@ -1,0 +1,17 @@
+SELECT
+    CASE
+        WHEN LENGTH(USE_YMD) = 8 AND TRY_TO_DATE(USE_YMD, 'YYYYMMDD') IS NOT NULL THEN 
+            TO_CHAR(TO_DATE(USE_YMD, 'YYYYMMDD'), 'YYYY-MM-DD')
+        ELSE
+            USE_YMD
+    END AS USAGE_DATE,
+    "LINE",
+    STATION,
+    CONCAT("LINE", ' - ', STATION) AS SOURCE_STATION_ID,
+    GT_ON,
+    GT_OFF,
+    _LOADED_AT
+FROM
+    {{ source('raw', 'subway') }}
+WHERE
+    USE_YMD IS NOT NULL
