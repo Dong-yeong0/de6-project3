@@ -31,7 +31,7 @@ def collect_subway_data(**context):
         raise Exception("❌ 데이터 없음")
 
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/subway/{exec_date.strftime('%Y/%m')}/subway_station_{run_date}.json"
 
     local_path = f"/tmp/subway_station_{run_date}.json"
@@ -50,7 +50,7 @@ def collect_subway_data(**context):
 # ✅ 2. 전처리: JSON → Parquet
 def preprocess_subway_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/subway/{exec_date.strftime('%Y/%m')}/subway_station_{run_date}.json"
     output_key = f"processed_data/subway/{exec_date.strftime('%Y/%m')}/subway_station_{run_date}.parquet"
 
@@ -88,7 +88,7 @@ def preprocess_subway_data(**context):
 # ✅ 3. 적재: Snowflake FULL REFRESH
 def load_subway_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     parquet_key = f"processed_data/subway/{exec_date.strftime('%Y/%m')}/subway_station_{run_date}.parquet"
 
     s3_hook = S3Hook(aws_conn_id="aws_s3_conn")
@@ -127,7 +127,7 @@ default_args = {
 with DAG(
     dag_id='dag_subway_pipeline',
     default_args=default_args,
-    schedule_interval='@monthly',
+    schedule='@monthly',
     catchup=False,
     tags=['subway', 'pipeline'],
     description='지하철 위치정보 수집 → 전처리 → Snowflake 적재하는 단일 DAG'
