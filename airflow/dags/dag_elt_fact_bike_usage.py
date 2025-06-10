@@ -43,15 +43,15 @@ def elt_fact_bike_usage():
         )
         
         # # dim_station
-        # ExternalTaskSensor(
-        #     task_id='wait_for_dim_station',
-        #     external_dag_id='elt_dim_station',
-        #     external_task_id='run_dbt',
-        #     execution_date_fn=lambda exec_date: exec_date.replace(day=1), # dim_station is a month cycle, fix it on the 1st every month
-        #     mode='reschedule',
-        #     timeout=3600 * 24,
-        #     poke_interval=300
-        # )
+        ExternalTaskSensor(
+            task_id='wait_for_dim_station',
+            external_dag_id='elt_dim_station',
+            external_task_id='run_dbt',
+            execution_date_fn=lambda exec_date: exec_date.replace(day=1), # dim_station is a month cycle, fix it on the 1st every month
+            mode='reschedule',
+            timeout=3600 * 24,
+            poke_interval=300
+        )
         
         # dim_user
         ExternalTaskSensor(
