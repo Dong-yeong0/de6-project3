@@ -46,7 +46,7 @@ def collect_bus_data(**context):
         raise Exception("❌ 결과 없음")
 
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/bus/{exec_date.strftime('%Y/%m')}/bus_stop_{run_date}.json"
 
     local_path = f"/tmp/bus_stop_{run_date}.json"
@@ -65,7 +65,7 @@ def collect_bus_data(**context):
 # ✅ 2. 전처리: S3 JSON → 컬럼 추출/정제 → S3 Parquet 저장
 def preprocess_bus_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     s3_key = f"raw_data/bus/{exec_date.strftime('%Y/%m')}/bus_stop_{run_date}.json"
     output_key = f"processed_data/bus/{exec_date.strftime('%Y/%m')}/bus_stop_{run_date}.parquet"
 
@@ -102,7 +102,7 @@ def preprocess_bus_data(**context):
 # ✅ 3. 적재: Parquet → Snowflake FULL REFRESH
 def load_bus_data(**context):
     run_date = context['ds_nodash']
-    exec_date = context['execution_date']
+    exec_date = context['logical_date']
     parquet_key = f"processed_data/bus/{exec_date.strftime('%Y/%m')}/bus_stop_{run_date}.parquet"
 
     s3_hook = S3Hook(aws_conn_id="aws_s3_conn")
@@ -140,7 +140,7 @@ default_args = {
 with DAG(
     dag_id='dag_bus_pipeline',
     default_args=default_args,
-    schedule_interval='@monthly',
+    schedule='@monthly',
     catchup=False,
     tags=['bus', 'pipeline'],
     description='버스 위치정보 수집 → 전처리 → Snowflake 적재하는 단일 DAG'
