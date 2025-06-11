@@ -63,6 +63,9 @@
   ![image](https://github.com/user-attachments/assets/041d2faa-377b-48e6-b60c-17f8a6f770e6)
 
 - **버스**
+  ![image](https://github.com/user-attachments/assets/324c6956-2ac1-4321-b06b-53ee2a2edb69)
+  ![image](https://github.com/user-attachments/assets/68035e05-4bde-4b78-b0c8-e5c65b953997)
+  ![image](https://github.com/user-attachments/assets/71d00c1e-2723-4cbd-978d-b0673b5e49c5)
 
 - **지하철**
   ![image](https://github.com/user-attachments/assets/61586ed4-492a-4237-8233-4746ac9816a2)
