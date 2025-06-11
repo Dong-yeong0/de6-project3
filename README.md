@@ -1,6 +1,6 @@
 <img src="https://capsule-render.vercel.app/api?type=wave&color=5cbcff&height=150&section=header&text=&fontSize=50&fontColor=ffffff" />
 
-# 🚌 서울시 대중교통 & 공공자전거 이용량 데이터 파이프라인 구축 프로젝트 🚌
+# 🚌 서울시 대중교통 & 공공자전거 이용량 파이프라인 구축 🚌
 
 ### 🚇 프로젝트 개요
 서울특별시의 지하철, 버스, 공공자전거(따릉이) 데이터를 수집·분석하고, 시각화를 통해 유의미한 정보를 제공하는 데이터 파이프라인 구축 프로젝트입니다. 시간대별·지역별 이용 현황을 분석하여 교통 혼잡 해소 및 효율적인 교통 정책 수립의 기반을 마련합니다.
