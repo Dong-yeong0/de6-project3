@@ -1,0 +1,12 @@
+SELECT
+    STATION_ID,
+    ADDRESS1,
+    ADDRESS2,
+    LATITUDE,
+    LONGITUDE
+FROM
+    {{ source('raw', 'bike_location') }}
+WHERE
+    LATITUDE IS NOT NULL
+AND
+    LONGITUDE IS NOT NULL

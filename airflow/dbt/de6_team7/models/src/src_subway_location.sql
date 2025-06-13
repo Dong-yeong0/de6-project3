@@ -1,0 +1,13 @@
+SELECT
+    LINE_NO,
+    EXTERNAL_STATION_CODE,
+    STATION_NAME,
+    LATITUDE,
+    LONGITUDE,
+    CREATED_DATE AS _LOADED_AT
+FROM
+    {{ source('raw', 'subway_location') }}
+WHERE
+    LATITUDE IS NOT NULL
+AND
+    LONGITUDE IS NOT NULL
